@@ -3,10 +3,22 @@
 
 rm(list = ls())
 # set the working directory where your GIS data are located
-setwd("G:/Shared drives/_Org OlffLab/Teaching/APCE/APCE2024/APCE2024GIS")
+setwd("~/Desktop/Msc Ecology & Conservation/APCE 2024/apce2024gis")
 
 # restore the libraries of the project 
 renv::restore()
+
+rm(list = ls())
+gc()  # Run garbage collection
+
+
+install.packages("remotes")
+remotes::install_github("rspatial/terra")
+install.packages("tidyterra")
+
+remove.packages("terra")
+install.packages("terra", dependencies = TRUE)
+
 
 
 # load the different libraries
@@ -23,8 +35,11 @@ library(patchwork)  # for combining multiple ggplots in one panel plot
 # also see https://www.datanovia.com/en/blog/top-r-color-palettes-to-know-for-great-data-visualization/
 # Base R palettes
 barplot(rep(1,10), col = grey.colors(10))
+my_colors <- c("red", "white", "blue")
+my_colors
 barplot(rep(1,10), col = rev(topo.colors(10))) # rev turns the scale arround
 barplot(rep(1,10), col = rev(terrain.colors(10)))
+
 library(RColorBrewer) 
 RColorBrewer::display.brewer.all()
 barplot(rep(1,10), col = RColorBrewer::brewer.pal(10, "Spectral"))
@@ -45,6 +60,7 @@ pal_zissou1
 sf::st_layers("./2022_protected_areas/protected_areas.gpkg")
 protected_areas<-terra::vect("./2022_protected_areas/protected_areas.gpkg",
             layer="protected_areas_2022") # read protected area boundaries)
+plot(protected_areas)
 sf::st_layers("./2022_rivers/rivers_hydrosheds.gpkg")
 rivers<-terra::vect("./2022_rivers/rivers_hydrosheds.gpkg",
                     layer="rivers_hydrosheds")
@@ -53,7 +69,7 @@ lakes<-terra::vect("./lakes/lakes.gpkg",
                    layer="lakes")  
 sf::st_layers("./studyarea/studyarea.gpkg")
 studyarea<-terra::vect("./studyarea/studyarea.gpkg",
-                              layer="my_study_area")
+                              layer="my_area")
 
 
 # load the raster data for the whole ecosystem
@@ -64,13 +80,31 @@ elevation<-terra::rast("./2023_elevation/elevation_90m.tif")
 
 # inspect the data 
 class(protected_areas)
+class(elevation)
+plot(protected_areas)
+plot(elevation)
+plot(protected_areas, add=T)
 
 
 # set the limits of the map to show (xmin, xmax, ymin, ymax in utm36 coordinates)
 xlimits<-c(550000,900000)
 ylimits<-c(9600000,9950000)
 
-# plot the woody biomass map that you want to predict
+str(woodybiom)
+
+# Aggregate to reduce resolution (experiment with different factors, e.g., 2, 5, etc.)
+woodybiom_reduced <- terra::aggregate(woodybiom, fact = 2)  # Adjust factor as needed
+
+update.packages(c("terra", "tidyterra", "ggplot2", "sf"))
+plot(woodybiom)
+# Save and reload the raster
+terra::writeRaster(woodybiom, "woodybiom_temp.tif", overwrite = TRUE)
+woodybiom_reloaded <- terra::rast("woodybiom_temp.tif")
+
+Sys.getenv("PROJ_LIB")
+
+
+
 
 # plot the rainfall map
 
