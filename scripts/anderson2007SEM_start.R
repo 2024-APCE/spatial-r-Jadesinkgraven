@@ -41,24 +41,42 @@ Anderson2007std
 # note that this does not affect the relations between the variables, only the scales  
 
 # make a pairs panel to inspect linearity of relations and expected normality of residuals
-psych::pairs.panels(Anderson2007 %>% select(ALL_LHU,RES_LHU,FIRE_FRQ,NMS,
-                                            LF_Na,LF_N),
+psych::pairs.panels(Anderson2007 %>% select(ALL_LHU,BIOMASS,FIRE_FRQ,NMS,
+                                            LF_N),
                     stars = T, ellipses = F)
-psych::pairs.panels(Anderson2007std %>% select(BIOMASS,RES_LHU,FIRE_FRQ,NMS,
-                                            LF_Na,LF_N),
+psych::pairs.panels(Anderson2007std %>% select(ALL_LHU,BIOMASS,FIRE_FRQ,NMS,
+                                               LF_N),
                     stars = T, ellipses = F)
 
 # analyse the model (response ~ predictors) with a multiple regression approach 
+multreg <- lm(LF_N ~ RES_LHU + FIRE_FRQ + NMS + BIOMASS, data = Anderson2007std)
+summary(multreg)
 
 # visualization of the result: 
 # browseURL("https://docs.google.com/presentation/d/1Q7uXC5Wiu0G4Xsp5uszCNHKOnf1IMI9doY-13Wbay4A/edit?usp=sharing")
 
 # Make a lavaan model as hypothesized in the Anderson et al 2007 paper and fit the model 
-
-
+Leaf_N_Model <- 'LF_N ~ RES_LHU + FIRE_FRQ + NMS + BIOMASS
+                BIOMASS ~ FIRE_FRQ + RES_LHU
+                NMS ~ FIRE_FRQ + RES_LHU'
+Leaf_N_Model
+Leaf_N_fit <- lavaan::sem(Leaf_N_Model, data = Anderson2007std)
 # show the model results
+summary(Leaf_N_fit, standardized = T, fit.measures = T, rsquare = T)
+
 # goodness of fit (should be >0.9): CFI and TLI
 # badness of fit: ( should be <0.1): RMSEA, SRMR
+
+# Make a lavaan model as hypothesized in the Anderson et al 2007 paper and fit the model 
+Leaf_P_Model <- 'LF_P ~ RES_LHU + FIRE_FRQ + NMS + BIOMASS
+                BIOMASS ~ FIRE_FRQ + RES_LHU
+                NMS ~ FIRE_FRQ + RES_LHU'
+Leaf_P_Model
+Leaf_P_fit <- lavaan::sem(Leaf_P_Model, data = Anderson2007std)
+# show the model results
+summary(Leaf_P_fit, standardized = T, fit.measures = T, rsquare = T)
+
+
 
 <<<<<<< HEAD
 # visualise the model
