@@ -11,15 +11,12 @@ renv::restore()
 rm(list = ls())
 gc()  # Run garbage collection
 
-
+# terra via github
 install.packages("remotes")
 remotes::install_github("rspatial/terra")
-install.packages("tidyterra")
-
-remove.packages("terra")
-install.packages("terra", dependencies = TRUE)
 
 
+Sys.setenv(PROJ_LIB = "/opt/homebrew/Cellar/proj/9.5.0/share/proj")
 
 # load the different libraries
 library(terra)       # for working with raster data
@@ -92,21 +89,41 @@ ylimits<-c(9600000,9950000)
 
 str(woodybiom)
 
-# Aggregate to reduce resolution (experiment with different factors, e.g., 2, 5, etc.)
-woodybiom_reduced <- terra::aggregate(woodybiom, fact = 2)  # Adjust factor as needed
+woodybiom <- raster::raster("./2016_WoodyVegetation/TBA_gam_utm36S.tif") |>  as.data.frame(xy=T)
 
-update.packages(c("terra", "tidyterra", "ggplot2", "sf"))
-plot(woodybiom)
-# Save and reload the raster
-terra::writeRaster(woodybiom, "woodybiom_temp.tif", overwrite = TRUE)
-woodybiom_reloaded <- terra::rast("woodybiom_temp.tif")
+protected_areas <- raster::raster("./2022_protected_areas/protected_areas.gpkg") |>  as.data.frame(xy=T)
 
-Sys.getenv("PROJ_LIB")
+file.exists("/Users/jadesinkgraven/Desktop/Msc Ecology & Conservation/APCE 2024/apce2024gis/2022_protected_areas/protected_areas.gpkg")
+
+st_crs(woodybiom)
+st_crs(protected_areas)
 
 
+ggplot()+
+  tidyterra::geom_spatraster(data= woodybiom) + #check in dataframe what fill is
+  scale_fill_gradientn(colours=rev(terrain.colors(6)),
+                       limits=c(0.77, 6.55),
+                       oob=squish,
+                       name = "TBA/ha")  +
+  tidyterra::geom_spatvector(data = protected_areas,
+                             fill = NA, linewidth = 0.5) +
+  tidyterra::geom_spatvector(data = studyarea,
+                             fill = NA, color = "red", linewidth = 1) +
+  tidyterra::geom_spatvector(data = rivers,
+                             color = "royalblue", linewidth = 0.75) +
+  tidyterra::geom_spatvector(data = lakes,
+                             fill = "blue")
 
 
 # plot the rainfall map
+ggplot()+
+  geom_raster(data= rainfall, aes(x=x, y=y, fill=CHIRPS_MeanAnnualRainfall))+
+  scale_fill_gradientn(colours=rev(viridis::viridis(6)),
+                       limits=c(0, 2000),
+                       oob=squish,
+                       name = "Mean annual rainfall (mm)")+
+  ggspatial::scale_bar(location = "bottomright", dist = 100, dist_unit = "km", transform = TRUE)
+
 
 # plot the elevation map
 
