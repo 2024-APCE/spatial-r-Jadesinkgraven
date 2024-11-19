@@ -83,6 +83,7 @@ woodybiom<-terra::rast("./2016_WoodyVegetation/TBA_gam_utm36S.tif")
 hillshade<-terra::rast("./2023_elevation/hillshade_z5.tif")
 rainfall<-terra::rast("./rainfall/CHIRPS_MeanAnnualRainfall.tif")
 elevation<-terra::rast("./2023_elevation/elevation_90m.tif")
+treecover <- terra::rast("./2019_copernicus_treecover/copernicus_tree_cover.tif")
 
 # inspect the data
 class(protected_areas)
@@ -90,6 +91,8 @@ class(elevation)
 plot(protected_areas)
 plot(elevation)
 plot(protected_areas, add=T)
+class(treecover)
+plot(treecover)
 
 # set the limits of the map to show (xmin, xmax, ymin, ymax in utm36 coordinates)
 xlimits<-c(550000,900000)
