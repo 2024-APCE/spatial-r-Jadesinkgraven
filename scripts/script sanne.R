@@ -460,7 +460,12 @@ all_maps_sa<-woody_map_sa +dist2river_map_sa + elevation_map_sa +
   cec_map_sa + burnfreq_map_sa + landform_map_sa +rpoints_map_sa +
   patchwork::plot_layout(ncol=3)
 all_maps_sa
-ggsave("./figures/all_maps_sa.png", width = 297, height = 210, units = "mm",dpi=300)
+# Create the directory if it doesn't exist
+if (!dir.exists("./spatial_figures")) dir.create("./spatial_figures")
+
+# Save the plot
+ggsave("spatial_figures/all_maps_studyArea.pdf", 
+       width = 18, height = 18, units = "cm", dpi = 300)
 
 
 # extract your the values of the different raster layers to the points
