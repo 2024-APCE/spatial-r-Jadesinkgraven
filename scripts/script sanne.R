@@ -61,6 +61,7 @@ pal_zissou1<-rev(wesanderson::wes_palette("Zissou1", 10, type = "continuous"))
 pal_zissou2<-wesanderson::wes_palette("Zissou1", 10, type = "continuous")
 pal_zissou1
 
+
 # load the vector data for the whole ecosystem
 protected_areas
 plot(protected_areas)
@@ -116,11 +117,14 @@ woody_map <- ggplot() +
                              color = "royalblue", linewidth = 0.75) +
   tidyterra::geom_spatvector(data = lakes,
                              fill = "blue")+
-  labs(title="woody biomass") +
+  labs(title="Woody biomass") +
   coord_sf(xlimits,ylimits,datum = sf::st_crs(32736)) +
   theme(axis.text = element_blank(),
-        axis.ticks = element_blank()) +
-  ggspatial::annotation_scale(location="bl",width_hint=0.2)
+        axis.ticks = element_blank(),
+        plot.title = element_text(size = 24),      # Title size
+        legend.text = element_text(size = 24),     # Legend text size
+        legend.title = element_text(size = 20)) +
+  ggspatial::annotation_scale(location="bl",width_hint=0.2, text_cex = 2.5)
 woody_map  
 
 #plot rainfall map
@@ -138,20 +142,23 @@ rainfall_map<- ggplot()+
                              fill=NA,color="red", linewidth=1)+
   tidyterra::geom_spatvector(data=lakes,
                              fill="blue", linewidth=0.5)+
-  labs(title = "rainfall")+
+  labs(title = "Rainfall")+
   coord_sf(xlimits,ylimits,datum=sf::st_crs(32736))+
   theme(axis.text=element_blank(),
-        axis.ticks=element_blank())+
-  ggspatial::annotation_scale(location="bl",width_hint=0.2)
+        axis.ticks=element_blank(),
+        plot.title = element_text(size = 24),      # Title size
+        legend.text = element_text(size = 24),     # Legend text size
+        legend.title = element_text(size = 20))+
+  ggspatial::annotation_scale(location="bl",width_hint=0.2, text_cex = 2.5)
 rainfall_map
 
 # make elevation map  
 elevation_map<-ggplot() +
   tidyterra::geom_spatraster(data=elevation) +
   scale_fill_gradientn(colours=terrain.colors(10),
-                       limits=c(500,2100),
+                       limits=c(500,2600),
                        oob=squish,
-                       name="meters") +
+                       name="Meters") +
   tidyterra::geom_spatvector(data=protected_areas,
                              fill=NA,linewidth=0.5) +
   tidyterra::geom_spatvector(data=studyarea,
@@ -160,16 +167,19 @@ elevation_map<-ggplot() +
                              fill="lightblue",linewidth=0.5) +
   tidyterra::geom_spatvector(data=rivers,
                              col="blue",linewidth=0.5) +
-  labs(title="elevation") +
+  labs(title="Elevation") +
   coord_sf(xlimits,ylimits,datum = sf::st_crs(32736)) +
   theme(axis.text = element_blank(),
-        axis.ticks = element_blank()) +
-  ggspatial::annotation_scale(location="bl",width_hint=0.2)
+        axis.ticks = element_blank(),
+        plot.title = element_text(size = 24),      # Title size
+        legend.text = element_text(size = 24),     # Legend text size
+        legend.title = element_text(size = 20)) +
+  ggspatial::annotation_scale(location="bl",width_hint=0.2, text_cex = 2.5)
 elevation_map  
 
 # combine the maps with patchwork
-all_maps<-woody_map +elevation_map +
-  patchwork::plot_layout(ncol=1)
+all_maps<-woody_map +elevation_map + rainfall_map +
+  patchwork::plot_layout(ncol=3)
 all_maps
 ggsave("./figures/all_maps_wholeEcosystem.png", width = 18, height = 18, units = "cm",dpi=300)
 
@@ -198,7 +208,7 @@ woody_map_sa <- ggplot() +
                              fill="lightblue",linewidth=0.5) +
   tidyterra::geom_spatvector(data=rivers,
                              col="blue",linewidth=0.5) +
-  labs(title="woody biomass") +
+  labs(title="Woody biomass as Total Basal Area") +
   coord_sf(xlimits,ylimits,expand=F,
            datum = sf::st_crs(32736)) +
   theme(axis.text = element_blank(),
@@ -211,7 +221,7 @@ elevation_sa<-terra::crop(elevation,saExt) # crop to study area
 elevation_map_sa<-ggplot() +
   tidyterra::geom_spatraster(data=elevation_sa) +
   scale_fill_gradientn(colours=terrain.colors(6),
-                       limits=c(1500,2100),
+                       limits=c(1500,2600),
                        oob=squish,
                        name="meters") +
   tidyterra::geom_spatvector(data=protected_areas,
@@ -222,7 +232,7 @@ elevation_map_sa<-ggplot() +
                              fill="lightblue",linewidth=0.5) +
   tidyterra::geom_spatvector(data=rivers,
                              col="blue",linewidth=0.5) +
-  labs(title="elevation") +
+  labs(title="Elevation") +
   coord_sf(xlimits,ylimits,expand=F,
            datum = sf::st_crs(32736)) +
   theme(axis.text = element_blank(),
@@ -275,8 +285,8 @@ woody_map_sa <- ggplot() +
                              color = "royalblue", linewidth = 0.75) +
   tidyterra::geom_spatvector(data = lakes,
                              fill = "blue")+
-  labs(title="woody biomass") +
-  coord_sf(xlimits,ylimits,datum = sf::st_crs(32736)) +
+  labs(title="Woody biomass") +
+  coord_sf(xlimits,ylimits, expand=F,datum = sf::st_crs(32736)) +
   theme(axis.text = element_blank(),
         axis.ticks = element_blank()) +
   ggspatial::annotation_scale(location="bl",width_hint=0.2)
@@ -314,7 +324,7 @@ burnfreq_map_sa<-ggplot() +
   scale_fill_gradientn(colours=pal_zissou2,
                        limits=c(0,4),
                        oob=squish,
-                       name="years\nburned") +
+                       name="Burning frequency") +
   tidyterra::geom_spatvector(data=protected_areas,
                              fill=NA,linewidth=0.5) +
   tidyterra::geom_spatvector(data=studyarea,
@@ -323,7 +333,7 @@ burnfreq_map_sa<-ggplot() +
                              fill="lightblue",linewidth=0.5) +
   tidyterra::geom_spatvector(data=rivers,
                              col="blue",linewidth=0.5) +
-  labs(title="n years burned") +
+  labs(title="Burning frequency from 2001 - 2016") +
   coord_sf(xlimits,ylimits,expand=F,
            datum = sf::st_crs(32736)) +
   theme(axis.text = element_blank(),
@@ -339,7 +349,7 @@ cec_map_sa<-ggplot() +
   scale_fill_gradientn(colours=pal_zissou1,
                        limits=c(100,250),
                        oob=squish,
-                       name="Soil\nCEC\n5-15cm") +
+                       name="mmol/kg") +
   tidyterra::geom_spatvector(data=protected_areas,
                              fill=NA,linewidth=0.5) +
   tidyterra::geom_spatvector(data=studyarea,
@@ -348,7 +358,7 @@ cec_map_sa<-ggplot() +
                              fill="lightblue",linewidth=0.5) +
   tidyterra::geom_spatvector(data=rivers,
                              col="blue",linewidth=0.5) +
-  labs(title="Soil CEC") +
+  labs(title="Cation Exchange Capacity of the soil") +
   coord_sf(xlimits,ylimits,expand=F,
            datum = sf::st_crs(32736)) +
   theme(axis.text = element_blank(),
@@ -374,7 +384,7 @@ hillshade_map_sa<-ggplot() +
                              fill="lightblue",linewidth=0.5) +
   tidyterra::geom_spatvector(data=rivers,
                              col="blue",linewidth=0.5) +
-  labs(title="hillshade") +
+  labs(title="Hillshade") +
   coord_sf(xlimits,ylimits,expand=F,
            datum = sf::st_crs(32736)) +
   theme(axis.text = element_blank(),

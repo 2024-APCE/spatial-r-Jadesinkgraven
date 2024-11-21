@@ -31,14 +31,13 @@ multreg <- lm(woody ~ hills + burnfreq + cec + rainfall + elevation + dist2river
 summary(multreg)
 
 # Make a lavaan model and fit the model 
-woody_model <- 'woody ~ cec + burnfreq + rainfall + dist2river
-                rainfall ~ elevation + hills
-                cec ~  rainfall + dist2river
-                dist2river ~ rainfall + hills
-                burnfreq ~ hills + elevation  
-                hills ~ elevation  
-                elevation ~~ hills'
-
+woody_model1 <- 'woody ~ cec + rainfall + dist2river
+                rainfall ~ elevation 
+                cec ~  rainfall + burnfreq + elevation 
+                dist2river ~ elevation
+                burnfreq ~ rainfall + elevation 
+                '
+                
 woody_model <- '
   # Direct predictors of woody
   woody ~ cec + rainfall + dist2river
@@ -56,22 +55,29 @@ woody_model <- '
   hills ~ elevation
 '
 
-woody_model <- '
-  woody ~ cec + rainfall + dist2river
+woody_model2 <- '
+  woody ~ cec + rainfall + dist2river + hills 
   rainfall ~ elevation
-  cec ~ rainfall
-  dist2river ~ rainfall
-  hills ~ elevation
+  cec ~ rainfall + hills + elevation
+  dist2river ~ elevation 
+  hills ~~ elevation
 '
 
 
-woody_model
-woody_fit <- lavaan::sem(woody_model, data = SEM_data_std)
+woody_model2
+woody_fit <- lavaan::sem(woody_model2, data = SEM_data_std)
 # show the model results
 summary(woody_fit, standardized = T, fit.measures = T, rsquare = T)
 
 #how can I make the model to fit better?
 
+library(lavaanPlot)
 
+# plot the model using lavaan plot
+lavaanPlot::lavaanPlot(woody_fit, 
+                       coefs = TRUE, 
+                       stand = TRUE,
+                       graph_options=list(rankdir="LR"),
+                       stars="regress")
 
 
